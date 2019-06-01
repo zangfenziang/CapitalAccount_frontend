@@ -1,144 +1,104 @@
 import React from "react";
 
-import { Input, Row, Col, message } from 'antd';
+import {api} from '../web.config.json';
 
-import LegalUserForm from './form/LegalUserForm'
-import PersonalUserForm from './form/PersonalUserForm'
+import {
+    Row,
+    Col,
+    Input,
+    message,
+} from 'antd';
 
-import {api} from '../web.config.json'
+import AccountForm from './form/AccountForm'
 
 const Search = Input.Search;
 
-class UnlockUser extends React.Component {
+class UnlockUser extends React.Component{
     state = {
-        status: 0,
+        visible: false,
         user: {}
     }
-    findPersonalUser = (account_id) => {
+    search = (value) => {
         const data = new URLSearchParams();
-        data.append('account_id', account_id);
-        fetch(api + '/personal_user_find_by_banker', {
+        data.append('user_id', value);
+        fetch(api + "/account_find_by_banker", {
             body: data,
             method: "POST",
             credentials: 'include',
             mode: "cors"
         })
-        .then(data => data.json())
-        .then(json => {
-            this.setState({
-                status: 1,
-                user: json
-            })
-        })
-        .catch(err => {
-            message.error(err.message)
-            console.error(err)
-        })
-    }
-    findLegalUser = (account_id) => {
-        const data = new URLSearchParams();
-        data.append('account_id', account_id);
-        fetch(api + '/legal_user_find_by_banker', {
-            body: data,
-            method: "POST",
-            credentials: 'include',
-            mode: "cors"
-        })
-        .then(data => data.json())
-        .then(json => {
-            this.setState({
-                status: 2,
-                user: json
-            })
-        })
-        .catch(err => {
-            message.error(err.message)
-            console.error(err)
-        })
-    }
-    findUser = (account_id) =>{
-        const data = new URLSearchParams();
-        data.append('account_id', account_id);
-        fetch(api + '/user_find_by_banker', {
-            body: data,
-            method: "POST",
-            credentials: 'include',
-            mode: "cors"
-        })
-        .then(data => data.json())
-        .then(json => {
-            if (json.status === 0){
-                const user = json.user;
-                if (user.status === 'Normal'){
-                    message.error('User is Unlocked');
-                }
-                else if (user.account_type === 'Legal'){
-                    this.findLegalUser(account_id);
+        .then(res=>res.json())
+        .then(json=>{
+            if (json.user_id){
+                if (json.status === 'Lock'){
+                    this.setState({
+                        visible: true,
+                        user: json,
+                    })
                 }
                 else{
-                    this.findPersonalUser(account_id);
+                    message.info('user is Unlocked');
                 }
             }
             else{
-                message.error('User ID not found');
+                message.error("user name not exists");
             }
         })
-        .catch(err => {
+        .catch(err=>{
             console.error(err);
             message.error(err.message);
         })
     }
-    unlockUser = (values) => {
-        const id = values["account_id"];
+    handle = (values) => {
         const data = new URLSearchParams();
-        data.append('account_id', id);
-        fetch(api + '/user_unfreeze_by_banker', {
+        Object.keys(values).forEach(key=>{
+          data.append(key, values[key]);
+        });
+        fetch(api + "/account_unlock_by_banker", {
             body: data,
             method: "POST",
             credentials: 'include',
             mode: "cors"
         })
-        .then(data => data.json())
-        .then(json => {
-            if (json.status === 0){
-                message.success(json.message)
-                this.setState({
-                    status: 0,
-                    user: {}
-                })
+        .then(res=>res.json())
+        .then(json=>{
+            if (json.status !== 0){
+                message.error(json.message);
             }
             else{
-                message.error(json.message)
+                message.success(json.message);
+                this.setState({
+                    visible: false,
+                    user: {},
+                })
             }
         })
-        .catch(err => {
-            console.error(err)
-            message.error(err.message)
+        .catch(err=>{
+            console.error(err);
+            message.error(err.message);
         })
     }
     render(){
-        const form = ()=>{
-            if (this.state.status === 1){
-                return <PersonalUserForm handle={this.unlockUser} isSubmit={true} button={'Unlock'} values={this.state.user} isChange={false} />
-            }
-            else if (this.state.status === 2){
-                return <LegalUserForm handle={this.unlockUser} isSubmit={true} button={'Unlock'} values={this.state.user} isChange={false} />
+        const form = () => {
+            if (this.state.visible){
+                return (
+                    <AccountForm values={this.state.user} button={'Lock'} isChange={false} drawShow={this.props.drawShow} handle={this.handle} />
+                )
             }
         }
         return (
             <div>
-                <Row>
-                    <Col span={6}>
-                        <Search
-                            placeholder="input Account ID"
-                            enterButton="Search"
-                            size="large"
-                            onSearch={value => {this.findUser(value)}}
+                <Row style={{marginBottom: 20}}>
+                    <Col span={6} offset={9}>
+                        <Search 
+                        placeholder="input user name" 
+                        enterButton="Search"
+                        onSearch={this.search} 
                         />
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={12} offset={6}>
+                    <Col span={6} offset={9}>
                         {form()}
                     </Col>
                 </Row>
@@ -147,4 +107,10 @@ class UnlockUser extends React.Component {
     }
 }
 
-export default UnlockUser;
+UnlockUser.defaultProps = {
+    drawShow: async (account_id) => {
+        console.log(account_id);
+    }
+}
+
+export default UnlockUser

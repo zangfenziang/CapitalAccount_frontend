@@ -23,7 +23,7 @@ class NormalLoginForm extends React.Component {
         Object.keys(values).forEach(key=>{
           data.append(key, values[key]);
         });
-        fetch(api + "/user_login", {
+        fetch(api + "/account_login", {
           body: data,
           method: "POST",
           credentials: 'include',
@@ -66,7 +66,7 @@ class NormalLoginForm extends React.Component {
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
         <Form.Item>
-          {getFieldDecorator('account_id', {
+          {getFieldDecorator('user_id', {
             rules: [{ required: true, message: 'Please input your username!' }],
           })(
             <Input
@@ -76,7 +76,7 @@ class NormalLoginForm extends React.Component {
           )}
         </Form.Item>
         <Form.Item>
-          {getFieldDecorator('password', {
+          {getFieldDecorator('login_pwd', {
             rules: [{ required: true, message: 'Please input your Password!' }],
           })(
             <Input

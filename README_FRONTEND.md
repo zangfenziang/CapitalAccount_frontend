@@ -40,7 +40,7 @@ example:
       user_id 
       user_password
       remember_status
-- OutPut:
+- Output:
 
       status
       message
@@ -59,80 +59,18 @@ example:
 - Input:
 
       account_id
-- OutPut:
+- Output:
 
       status
       user(password="")
 
-### /user_add_by_banker 
-- 增加一个用户
-- Input:
-
-      account_id
-      password
-      account_type
-- OutPut:
-
-      status
-      message
-
-### /user_freeze_by_banker"
-- 冻结一个用户
-- Input:
-
-      account_id
-- OutPut:
-
-      status
-      message
-
-### /user_unfreeze_by_banker
-- 解冻一个用户
-- Input:
-
-      account_id
-- OutPut:
-
-      status
-      message
-
-### /user_delete_by_banker
-- 注销一个用户
-- Input:
-
-      account_id
-- OutPut:
-
-      status
-      message
-
-### /personal_user_add_by_banker
--增加一个个人用户
-- Input:
-
-      account_id
-      password
-      name
-      gender
-      id_num
-      address
-      job
-      degree
-      organization
-      phone_num
-      agency
-      agent_id_num
-- OutPut:
-
-      status
-      message
 
 ### /personal_user_find_by_banker
 - 通过用户account_id获取个人用户信息
 - Input:
 
       account_id
-- OutPut:
+- Output:
 
       account_id
       name
@@ -146,33 +84,13 @@ example:
       agency
       agent_id_num
 
-### /legal_user_add_by_banker
-- 增加一个法人用户
-- Input:
-
-      account_id
-      password
-      legal_num
-      license_num
-      legal_name
-      legal_id_num
-      legal_address
-      legal_phone
-      authorize_name
-      authorize_id_num
-      authorize_address
-      authorize_phone
-- OutPut:
-
-      status
-      message
 
 ### /legal_user_find_by_banker
 - 通过用户account_id获取个人法人信息
 - Input:
 
       account_id
-- OutPut:
+- Output:
 
       account_id
       legal_num
@@ -186,22 +104,85 @@ example:
       authorize_address
       authorize_phone
 
-### /user_login
-- 用户登陆
+### /account_login
 - Input:
 
-      account_id 
-      password
+      user_id
+      login_pwd
       remember_status
-- OutPut:
+- Output:
 
       status
       message
-
-### /user_login_status 
-- 用户是否已经登陆
+      
+### /account_login_status
 - Input:
-- OutPut:
+- Output:
+
+      status
+      message
+      
+### /account_set_login_pwd
+- Input:
+
+      login_pwd
+      old_login_pwd
+- Output:
+
+      status
+      message
+      
+### /account_fund
+- Input:
+- Output:
+
+      status
+      message
+      
+### /account_fund_change
+- Input:
+
+      number
+- Output:
+
+      status
+      message
+      
+### /account_add_by_banker
+- Input:
+
+      user_id
+      id
+      login_pwd
+      securities_id
+- Output:
+
+      status
+      message
+      
+### /account_logout_by_banker
+- Input:
+
+      user_id
+- Output:
+
+      status
+      message
+      
+### /account_lock_by_banker
+- Input:
+
+      user_id
+- Output:
+
+      status
+      message
+      
+### /account_unlock_by_banker
+- Input:
+
+      user_id
+- Output:
 
       status
       message
