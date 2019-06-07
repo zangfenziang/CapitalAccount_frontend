@@ -9,7 +9,7 @@ class Fund extends React.Component{
         fund: null,
     }
     async componentWillMount(){
-        await fetch(api + '/account_fund', {
+        const fund = await fetch(api + '/account_fund', {
             method: 'POST',
             credentials: 'include',
             mode: "cors"
@@ -20,14 +20,33 @@ class Fund extends React.Component{
             document.location.href = "#/login";
         }
         else{
-            this.setState({
-                fund: json.message
-            })
+            return json.message;
         }
         })
         .catch(err=>{
             console.error(err);
         });
+        const freezing = await fetch(api + '/account_freezing_fund', {
+            method: 'POST',
+            credentials: 'include',
+            mode: "cors"
+        })
+        .then(data=>data.json())
+        .then(json=>{
+        if (json.status !== 0){
+            document.location.href = "#/login";
+        }
+        else{
+            return json.message
+        }
+        })
+        .catch(err=>{
+            console.error(err);
+        });
+        this.setState({
+            'fund': fund,
+            'freezing': freezing,
+        })
     }
 
     number = 0;
@@ -75,6 +94,9 @@ class Fund extends React.Component{
                     <Row type="flex" justify="center" align="middle">
                         <Col span={3}>
                             <Statistic title="User Fund" value={this.state.fund} />
+                        </Col>
+                        <Col span={3}>
+                            <Statistic title="User Freezing Fund" value={this.state.freezing} />
                         </Col>
                         <Col span={2} offset={1}>
                             <InputNumber onChange={this.changeNumber} precision={2} step={0.01} min={0} defaultValue={0} />
