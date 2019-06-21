@@ -8,10 +8,28 @@ import {
     message
 } from 'antd'
 
-import AccountForm from './form/AccountForm'
+import AccountForm from './form/AccountFormAdd'
 
 class AddUser extends React.Component{
-    handle = (values) => {
+    handle = async (values) => {
+        const json = await fetch(api + "/user_find_by_id?id=" + values["securities_id"], {
+            method: "GET",
+            credentials: 'include',
+            mode: "cors"
+        })
+        .then(res=>res.json())
+        .catch(err=>{
+            console.error(err);
+            message.error(err.message);
+        })
+        if (!json){
+            return;
+        }
+        if (json.status !== 0){
+            message.error(json.message);
+            return;
+        }
+        values["securities_id"] = json.message;
         const data = new URLSearchParams();
         Object.keys(values).forEach(key=>{
           data.append(key, values[key]);
